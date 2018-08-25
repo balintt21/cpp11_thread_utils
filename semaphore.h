@@ -95,7 +95,7 @@ namespace thread_utils
 
     };
 
-    class BinarySemaphore  : public Semaphore<2> {};
+    class BinarySemaphore  : public Semaphore<1> {};
     class DynamicSemaphore : public Semaphore<std::numeric_limits<uint32_t>::max()>
     {
     public:
