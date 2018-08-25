@@ -86,8 +86,8 @@ namespace thread_utils
                 --mCounter;
                 return true;
             } else {
-                using namespace std::chrono_literals;
-                bool waken = mConditionVariable.wait_for(locker, timeout_ms * 1ms, [&]{ return (mCounter.load() > 0); });
+                std::chrono::milliseconds dur{timeout_ms};
+                bool waken = mConditionVariable.wait_for(locker, dur, [&]{ return (mCounter.load() > 0); });
                 if( waken && ( mCounter.load() > 0) ) { --mCounter; }
                 return waken;
             }
