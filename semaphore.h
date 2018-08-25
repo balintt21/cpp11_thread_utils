@@ -113,6 +113,6 @@ namespace thread_utils
 }
 
 typedef thread_utils::BinarySemaphore   binary_semaphore_t;
-typedef thread_utils::DynamicSemaphore  variable_semaphore_t;
+typedef thread_utils::DynamicSemaphore  semaphore_t;
 
 #endif
