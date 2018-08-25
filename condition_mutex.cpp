@@ -53,11 +53,11 @@ void thread_utils::ConditionMutex::wait()
 
 bool thread_utils::ConditionMutex::wait_for(int64_t timeout_ms)
 { 
-    using namespace std::chrono_literals;
     std::unique_lock<std::mutex> locker(mMutex, std::adopt_lock);
     ++mWaitingThreadCount;
     mState = false;
-    bool waken = mConditionVariable.wait_for(locker, timeout_ms * 1ms, [&] { return mSignal; });
+    std::chrono::milliseconds ms{timeout_ms};
+    bool waken = mConditionVariable.wait_for(locker, ms, [&] { return mSignal; });
     mState = true;
     --mWaitingThreadCount;
     if( mWaitingThreadCount == 0 )
