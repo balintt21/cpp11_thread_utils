@@ -33,11 +33,11 @@ namespace thread_utils
          * Returns a value of std::thread::id identifying the thread associated with *this.
          * @return size_t hash value of the thread id is returned if the thread is running otherwise the hash of the calling thread's id is returned.
          */
-        size_t getId() const noexcept;
+        size_t id() const noexcept;
         /**
          * Returns the name of the thread
          */
-        std::string getName() const noexcept;
+        std::string name() const noexcept;
         /**
          * Checks whether the thread is joinable, i.e. potentially running in parallel context
          * @return True on success, otherwise false is returned.

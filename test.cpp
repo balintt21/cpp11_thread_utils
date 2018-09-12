@@ -23,7 +23,7 @@ int main(int argc, char** argv)
     }, [](){ puts("Clean up handler called for th0!"); });
 
     if(success)
-    { printf("Thread %s(%lu) is started.\n", th.getName().c_str(), th.getId()); }
+    { printf("Thread %s(%lu) is started.\n", th.name().c_str(), th.id()); }
 
     success = th.run([](){});
     if( !success )
@@ -41,7 +41,7 @@ int main(int argc, char** argv)
     });
 
     if(success)
-    { printf("Thread %s(%lu) is started.\n", th1.getName().c_str(), th1.getId()); }
+    { printf("Thread %s(%lu) is started.\n", th1.name().c_str(), th1.id()); }
 
     thread_utils::sleep_for(3000);
     puts("Detaching th1");
@@ -59,9 +59,9 @@ int main(int argc, char** argv)
             printf("th2: running for %u s\n", cnt++);
             thread_utils::test_cancel();
         }
-    });
+    };
     if(success)
-    { printf("Thread %s(%lu) is started.\n", th2.getName().c_str(), th2.getId()); }
+    { printf("Thread %s(%lu) is started.\n", th2.name().c_str(), th2.id()); }
     thread_utils::sleep_for(5000);
     printf("Killing th2 ?%d\n", th2.kill());
     

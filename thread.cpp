@@ -22,7 +22,6 @@ static void generalSignalHandler(int signum, siginfo_t * siginfo, void * arg)
 {
     int retval;
     pthread_exit(&retval);
-
 }
 
 static int setSignalHandler(const int signum)
@@ -74,7 +73,7 @@ bool Thread::run(const std::function<void ()>& function, const std::function<voi
     return false;
 }
 
-size_t Thread::getId() const noexcept
+size_t Thread::id() const noexcept
 {
     std::hash<std::thread::id> hasher;
     if( !mContext ) { return hasher(std::this_thread::get_id()); }
@@ -82,7 +81,7 @@ size_t Thread::getId() const noexcept
     return ( mContext->thread ) ? hasher(mContext->thread->get_id()) : hasher(std::this_thread::get_id());
 }
 
-std::string Thread::getName() const noexcept
+std::string Thread::name() const noexcept
 {
     if( !mContext ) { return ""; }
     std::lock_guard<std::mutex> guard(mContext->mutex);
