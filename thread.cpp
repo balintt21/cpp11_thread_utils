@@ -2,6 +2,8 @@
 #include <unistd.h>
 #include <signal.h>
 
+static bool global_term_sig_handler_registered = false;
+
 struct CleanupContext
 {
     std::function<void ()> cleanupFunction;
@@ -46,6 +48,11 @@ void test_cancel()
 Thread::Thread(const std::string& name) 
     : mContext(new Thread::Context(name))
 {
+    if( !global_term_sig_handler_registered )
+    {
+        global_term_sig_handler_registered = (setSignalHandler(SIGUSR2) == 0);
+        #warning SIGUSR2 is used for killing threads! Disable this line if it is acceptable or use another signal at kill() and above this line
+    }
 }
 
 Thread::~Thread()
@@ -163,9 +170,6 @@ void Thread::threadFunction(std::shared_ptr<Thread::Context> context)
 {
     if( context )
     {
-        setSignalHandler(SIGUSR2);
-        #warning SIGUSR2 is used for killing threads! Disable this line if it is acceptable or use another signal at kill() and above this line
-
         setNiceValue(context->niceValue);
 
         if( !context->name.empty() )

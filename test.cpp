@@ -69,7 +69,7 @@ int main(int argc, char** argv)
             printf("th2: running for %u s\n", cnt++);
             thread_utils::test_cancel();
         }
-    });
+    }, [](){ puts("Clean up handler called for th2 when killed!"); });
     if(success)
     { printf("Thread %s(%lu) is started.\n", th2.name().c_str(), th2.id()); }
     thread_utils::sleep_for(5000);
