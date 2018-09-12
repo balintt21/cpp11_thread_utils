@@ -129,7 +129,7 @@ bool Thread::kill()
     if( !mContext ) { return false; }
     std::lock_guard<std::mutex> guard(mContext->mutex);
     if( mContext->state.load() && mContext->thread )
-    { return pthread_kill(static_cast<pthread_t>(mContext->thread->native_handle()), SIGTERM) == 0; }
+    { return pthread_kill(static_cast<pthread_t>(mContext->thread->native_handle()), SIGUSR2) == 0; }
     return false;
 }
 
@@ -163,7 +163,8 @@ void Thread::threadFunction(std::shared_ptr<Thread::Context> context)
 {
     if( context )
     {
-        setSignalHandler(SIGTERM);
+        setSignalHandler(SIGUSR2);
+        #warning SIGUSR2 is used for killing threads! Disable this line if it is acceptable or use another signal at kill() and above this line
 
         setNiceValue(context->niceValue);
 

@@ -1,11 +1,21 @@
 #include <stdio.h>
 #include <atomic>
+#include <signal.h>
 
 #include "thread.h"
 #include "thread_sleep.h"
 
+static void SigTermHandler( int signum )
+{
+    printf("PROCESS SigTermHandler caugth(%d)\n", signum);
+}
+
 int main(int argc, char** argv)
 {
+
+    if( signal( SIGTERM, SigTermHandler ) == SIG_ERR ){ printf( "Connecting signal %d failed!\n", SIGTERM ); }
+    else { printf( "Connecting signal %d succeeded!\n", SIGTERM ); }
+
     thread_utils::Thread th("test_th0");
     thread_utils::Thread th1("test_th1");
     thread_utils::Thread th2("test_th2");
@@ -59,7 +69,7 @@ int main(int argc, char** argv)
             printf("th2: running for %u s\n", cnt++);
             thread_utils::test_cancel();
         }
-    };
+    });
     if(success)
     { printf("Thread %s(%lu) is started.\n", th2.name().c_str(), th2.id()); }
     thread_utils::sleep_for(5000);

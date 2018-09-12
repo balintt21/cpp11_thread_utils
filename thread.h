@@ -59,7 +59,7 @@ namespace thread_utils
          */
         bool cancel();
         /**
-         * Terminates the associated thread by sending a signal
+         * Terminates the associated thread by sending a signal (SIGUSR2 is used for that task !)
          * @return False is returned if failed to initiate termination request, otherwise true.
          */
         bool kill();
