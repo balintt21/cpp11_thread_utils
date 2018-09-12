@@ -2,6 +2,22 @@
 #include <unistd.h>
 #include <signal.h>
 
+struct CleanupContext
+{
+    std::function<void ()> cleanupFunction;
+    CleanupContext(const std::function<void ()>& fn) : cleanupFunction(fn) {}
+};
+
+static void generalCleanupHandler(void * arg)
+{
+    CleanupContext* context = reinterpret_cast<CleanupContext*>(arg);
+    if( context->cleanupFunction )
+    {
+        context->cleanupFunction();
+    }
+    delete context;
+}
+
 namespace thread_utils
 {
 
@@ -131,13 +147,25 @@ void Thread::threadFunction(std::shared_ptr<Thread::Context> context)
     if( context )
     {
         setNiceValue(context->niceValue);
+
         if( !context->name.empty() )
         { pthread_setname_np(static_cast<pthread_t>(context->thread->native_handle()), context->name.c_str()); }
+
+        if( context->onCancelled )
+        {
+            int old_cancel_state = 0;
+            pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, &old_cancel_state);
+        }
+
+        pthread_cleanup_push(&generalCleanupHandler, new CleanupContext(context->onCancelled));
 
         if( context->function )
         {
             context->function();
         }
+
+        pthread_cleanup_pop(1);
+
         context->state.store(false);
     }
 }

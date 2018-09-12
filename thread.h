@@ -86,8 +86,7 @@ namespace thread_utils
         static void threadFunction(std::shared_ptr<Context> context);
 
         std::shared_ptr<Context> mContext;
-
     };
-};
+}
 
 #endif
