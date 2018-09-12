@@ -48,10 +48,11 @@ int main(int argc, char** argv)
     th1.detach();
     puts("th1 detached");
 
-    /*
+    
     success = th2.run([]()
     {
         uint32_t cnt = 1;
+        printf("th2 pthread_self(%lu)\n", pthread_self());
         while(true)
         {
             thread_utils::sleep_for(1000);
@@ -62,7 +63,7 @@ int main(int argc, char** argv)
     if(success)
     { printf("Thread %s(%lu) is started.\n", th2.getName().c_str(), th2.getId()); }
     thread_utils::sleep_for(5000);
-    printf("Killing th2 ?%d\n", th2.kill());*/
+    printf("Killing th2 ?%d\n", th2.kill());
     
 
     printf("Waiting for thread, is running? %s\n", th.joinable() ? "yes" : "no" );

@@ -18,6 +18,24 @@ static void generalCleanupHandler(void * arg)
     delete context;
 }
 
+static void generalSignalHandler(int signum, siginfo_t * siginfo, void * arg)
+{
+    int retval;
+    pthread_exit(&retval);
+
+}
+
+static int setSignalHandler(const int signum)
+{
+    struct sigaction act;
+    sigemptyset(&act.sa_mask);
+    act.sa_sigaction = generalSignalHandler;
+    act.sa_flags = SA_SIGINFO;
+    if (sigaction(signum, &act, NULL))
+        return errno;
+    return 0;
+}
+
 namespace thread_utils
 {
 
@@ -112,7 +130,7 @@ bool Thread::kill()
     if( !mContext ) { return false; }
     std::lock_guard<std::mutex> guard(mContext->mutex);
     if( mContext->state.load() && mContext->thread )
-    { return pthread_kill(static_cast<pthread_t>(mContext->thread->native_handle()), SIGKILL) == 0; }
+    { return pthread_kill(static_cast<pthread_t>(mContext->thread->native_handle()), SIGTERM) == 0; }
     return false;
 }
 
@@ -146,6 +164,8 @@ void Thread::threadFunction(std::shared_ptr<Thread::Context> context)
 {
     if( context )
     {
+        setSignalHandler(SIGTERM);
+
         setNiceValue(context->niceValue);
 
         if( !context->name.empty() )

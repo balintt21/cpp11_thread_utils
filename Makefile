@@ -1,3 +1,4 @@
+CROSS_COMPILE = arm-intellio-linux-gnueabihf-
 CC = g++
 CC_FLAGS = -O3 -Wall
 LD_FLAGS = -lpthread
@@ -8,6 +9,10 @@ OUTPUT_DIR = ./test
 
 all: $(OUTPUT_DIR) $(SOURCE_FILES) 
 	$(CC) $(CC_FLAGS) $(SOURCE_FILES) -o "$(OUTPUT_DIR)/$(NAME)" $(LD_FLAGS)
+
+arm: $(OUTPUT_DIR) $(SOURCE_FILES)
+	$(CROSS_COMPILE)$(CC) $(CC_FLAGS) $(SOURCE_FILES) -o "$(OUTPUT_DIR)/$(NAME)_arm" $(LD_FLAGS)
+
 
 .PHONY: clean
 clean: 
