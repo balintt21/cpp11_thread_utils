@@ -23,6 +23,7 @@ namespace thread_utils
         ~Thread();
         /**
          * A new thread of execution starts executing the given function.
+         * After the given @p function finished execution then this function can be called again.(restartable)
          * 
          * @param function An std::function<void ()> object which will be invoked on a new thread when started.
          * @param on_cancel An std::function<void ()> object which will be called before termination triggered by a previous invokation of kill() api function.
