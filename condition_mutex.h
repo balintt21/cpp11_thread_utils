@@ -11,12 +11,6 @@ namespace thread_utils
 {
     class ConditionMutex final
     {
-    private:
-        mutable std::mutex      mMutex;
-        std::condition_variable mConditionVariable;
-        bool                    mSignal;
-        uint32_t                mWaitingThreadCount;
-        std::atomic<bool>       mState;
     public:
         ConditionMutex();
         ~ConditionMutex();
@@ -58,6 +52,12 @@ namespace thread_utils
          */
         bool state() const;
         #endif
+    private:
+        mutable std::mutex      mMutex;
+        std::condition_variable mConditionVariable;
+        bool                    mSignal;
+        uint32_t                mWaitingThreadCount;
+        std::atomic<bool>       mState;
     };
 }
 
