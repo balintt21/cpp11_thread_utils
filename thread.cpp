@@ -1,6 +1,9 @@
 #include "thread.h"
 #include <unistd.h>
 #include <signal.h>
+#include <syscall.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 static bool global_term_sig_handler_registered = false;
 
@@ -144,33 +147,23 @@ bool Thread::setPriority(int32_t nice_value)
 {
     if( !mContext ) { return false; }
     std::lock_guard<std::mutex> guard(mContext->mutex);
-    if( !mContext->state.load() )
+    mContext->niceValue = nice_value;
+    if( mContext->pid != 0 )
     { 
-        mContext->niceValue = nice_value; 
-        return true;
-    }
-    return false;
-}
-
-static inline bool setNiceValue(int value)
-{
-	errno = 0;
-    int set_value = 0;
-	int actual_value = nice(0);
-	if( (errno == 0) && (actual_value != value)){
-		set_value = nice(-actual_value);
-		if(errno == 0){
-			set_value = nice(value);
-		}
-	}
-	return (errno == 0) && (set_value == value);
+        return setpriority(PRIO_PROCESS, mContext->pid, nice_value) == 0;
+    } 
+    return true;
 }
 
 void Thread::threadFunction(std::shared_ptr<Thread::Context> context)
 {
     if( context )
     {
-        setNiceValue(context->niceValue);
+        {
+            std::lock_guard<std::mutex> guard(context->mutex);
+            context->pid = static_cast<pid_t>(syscall(SYS_gettid));
+            setpriority(PRIO_PROCESS, 0, context->niceValue);
+        }
 
         if( !context->name.empty() )
         { pthread_setname_np(static_cast<pthread_t>(context->thread->native_handle()), context->name.c_str()); }
@@ -190,6 +183,10 @@ void Thread::threadFunction(std::shared_ptr<Thread::Context> context)
 
         pthread_cleanup_pop(1);
 
+        {
+            std::lock_guard<std::mutex> guard(context->mutex);
+            context->pid = 0;
+        }
         context->state.store(false);
     }
 }
@@ -201,6 +198,7 @@ Thread::Context::Context(const std::string& _name)
     , function()
     , onCancelled()
     , niceValue(0)
+    , pid(0)
     , name(_name)
 {}
 

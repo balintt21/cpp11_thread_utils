@@ -64,8 +64,7 @@ namespace thread_utils
          */
         bool kill();
         /**
-         * Sets the soft priority(nice value) of any new thread of execution. Which means that priority settings only applied if this function is
-         * called before invoking run() api function
+         * Sets the soft priority(nice value)
          * @param nice_value An integer representing priority level in the range of -20 to 19 where -20 is the highest priority.
          * @return True is returned if priority setting can be applied, otherwise false.
          */
@@ -79,6 +78,7 @@ namespace thread_utils
             std::function<void ()>       function;
             std::function<void ()>       onCancelled;
             int32_t                      niceValue;
+            pid_t                        pid;
             std::string                  name;
             Context(const std::string& _name);
         };
