@@ -1,0 +1,3 @@
+DETACH test
+KILL test
+RESTARTABLE test
