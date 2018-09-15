@@ -12,7 +12,7 @@ Utility classes for std::thread library.
   * _detach_
   * _set priority_
 * **Semaphore** - Header only semaphore implementation using std::condition_variable
-* **PosixSemaphore** - Semaphore (lazy)implementation using POSIX semaphore. (lazy: omitting but not hiding retvals and errors) 
+* **PosixSemaphore** - Semaphore implementation using POSIX semaphore. (lazy impl: omitting but not hiding retvals and errors) 
 * **ConditionMutex** - A mutex and condition_variable in one piece. Implements _'Lockable'_ concept.
 
 ## Example
