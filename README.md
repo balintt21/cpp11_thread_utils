@@ -65,11 +65,11 @@ printf("thread_1 counted to %u\n", counter.load());
 ```
 
 ### Example 3
-_Starts a thread that would read from a file forever. Kills|Cancels|Requests the thread after 10 seconds. In any case resources will be released._
+_Starts a thread that would read from a file forever. Kills | Cancels| Requests the thread after 10 seconds. In any case resources will be released._
 ```c++
 std::atomic_bool quit_request(false);
 thread_utils::Thread thread("thread_2");
-FILE* input_file = fopen("./input.dat");
+FILE* input_file = fopen("./input.dat", "rb");
 
 auto thread_function = [&input_file, &quit_request]()
 {
