@@ -1,5 +1,5 @@
 # cpp11_thread_utils
-Utility classes for std::thread library.
+Utility classes for standard threading, mutex library.
 
 ## Requirements
 * at least C++11
