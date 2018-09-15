@@ -28,7 +28,7 @@ _Starts a thread that would run forever. Waits for the thread to start with the 
 ```c++
 thread_utils::binary_semaphore_t thread_started_event;
 thread_utils::Thread thread("thread_0"); //assigning a name to the thread 'thread_0'
-thread.run([&]()
+thread.run([&thread_started_event]()
 {
     thread_started_event.notify();//Increments the semaphore's value by one (alias for post())
     uint32_t counter = 1;
@@ -52,7 +52,7 @@ _Starts a thread without cancellation points that would count forever. Kills the
 thread_utils::binary_semaphore_t thread_started_event;
 thread_utils::Thread thread("thread_1");
 uint32_t counter = 0;
-thread.run([&counter]()
+thread.run([&counter, &thread_started_event]()
 {
     thread_started_event.notify();//Increments the semaphore's value by one (alias for post())
     while(true) { ++counter; }
