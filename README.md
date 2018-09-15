@@ -6,14 +6,14 @@ Utility classes for std::thread library.
 * _pthread_ or (MinGW-w64) _winpthreads_
 
 ## Classes
-* _Thread_ - A wrapper class around std::thread with extended functionality like:
-  * cancel
-  * kill
-  * detach
-  * set priority
-* _Semaphore_ - Header only semaphore implementation using std::condition_variable
-* _PosixSemaphore_ - Semaphore implementation using POSIX sem_post, sem_wait
-* _ConditionMutex_ - A mutex and condition_variable in one piece. Implements _'Lockable'_ concept.
+* *Thread* - A wrapper class around std::thread with extended functionality like:
+  * _cancel_
+  * _kill_
+  * _detach_
+  * _set priority_
+* *Semaphore* - Header only semaphore implementation using std::condition_variable
+* *PosixSemaphore* - Semaphore implementation using POSIX sem_post, sem_wait
+* *ConditionMutex* - A mutex and condition_variable in one piece. Implements _'Lockable'_ concept.
 
 ## Example
 ```c++
