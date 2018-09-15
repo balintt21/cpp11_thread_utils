@@ -59,7 +59,7 @@ thread.run([&counter]()
 });
 thread_started_event.wait();
 thread_utils::sleepFor(5000);
-thread.kill();
+thread.kill();//Sends a SIGUSR2 signal to the thread that will invoke pthread_exit()
 thread.join();
 printf("thread_1 counted to %u\n", counter);
 ```
