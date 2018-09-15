@@ -6,14 +6,14 @@ Utility classes for standard threading, mutex library.
 * _pthread_ or (MinGW-w64) _winpthreads_
 
 ## Classes
+* **Semaphore** - Template class. Header only semaphore implementation using std::condition_variable.
+* **PosixSemaphore** - Header only, uses POSIX semaphore. (lazy impl.: omitting but not hiding retvals and errors) 
+* **ConditionMutex** - A mutex and condition_variable in one piece. Implements _'Lockable'_ concept.
 * **Thread** - A wrapper class around std::thread with extended functionality like:
   * _cancel_
   * _kill_
   * _detach_
   * _set priority_
-* **Semaphore** - Template class. Header only semaphore implementation using std::condition_variable
-* **PosixSemaphore** - Header only, uses POSIX semaphore. (lazy impl.: omitting but not hiding retvals and errors) 
-* **ConditionMutex** - A mutex and condition_variable in one piece. Implements _'Lockable'_ concept.
 
 ## Types
 * **binary_semaphore_t** derived from class **Semaphore<2>**
