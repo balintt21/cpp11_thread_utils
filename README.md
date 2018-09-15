@@ -4,7 +4,8 @@ Utility classes for standard threading, mutex library.
 ## Requirements
 * at least C++11
 * _pthread_ or (MinGW-w64) _winpthreads_
-
+## Namespace
+* **thread_utils**
 ## Classes
 * **Semaphore** - Template class. Header only semaphore implementation using std::condition_variable.
 * **PosixSemaphore** - Header only, uses POSIX semaphore. (lazy impl.: omitting but not hiding retvals and errors) 
