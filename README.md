@@ -51,7 +51,7 @@ _Starts a thread without cancellation points that would count forever. Kills the
 ```c++
 binary_semaphore_t thread_started_event;
 thread_utils::Thread thread("thread_1");
-uint64_t counter = 0;
+std::atomic_uint64_t counter(0);
 thread.run([&counter, &thread_started_event]()
 {
     thread_started_event.notify();//Increments the semaphore's value by one (alias for post())
@@ -61,5 +61,5 @@ thread_started_event.wait();
 thread_utils::sleepFor(5000);
 thread.kill();//Sends a SIGUSR2 signal to the thread that will invoke pthread_exit()
 thread.join();
-printf("thread_1 counted to %u\n", counter);
+printf("thread_1 counted to %u\n", counter.load());
 ```
