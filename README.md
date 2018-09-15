@@ -28,7 +28,7 @@ thread_utils::binary_semaphore_t thread_started_event;
 thread_utils::Thread thread("thread_0");
 thread.run([&]()
 {
-    thread_started_event.notify();//Increments the semaphore's value by one
+    thread_started_event.notify();//Increments the semaphore's value by one (alias for post())
     uint32_t counter = 1;
     while(true)
     {
