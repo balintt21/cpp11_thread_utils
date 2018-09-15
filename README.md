@@ -63,3 +63,39 @@ thread.kill();//Sends a SIGUSR2 signal to the thread that will invoke pthread_ex
 thread.join();
 printf("thread_1 counted to %u\n", counter.load());
 ```
+
+### Example 3
+_Starts a thread that would read from a file forever. Kills|Cancels|Requests the thread after 10 seconds. In all three cases resources are released, freed.
+```c++
+std::atomic_bool quit_request(false);
+thread_utils::Thread thread("thread_2");
+FILE* input_file = fopen("./input.dat");
+
+auto thread_function = [&input_file, &quit_request]()
+{
+    char buffer[1024]; //even if killed the stack of the thread will be freed
+    while(!quit_request.load())
+    {
+        while( fread(buffer, 1024, 1, input_file) == 1 )
+        {
+            buffer[1023] = 0;
+            printf("%s\n", buffer);
+            if(quit_request.load()) 
+            { break; }
+        }
+        fseek(input_file, 0, SEEK_SET);
+    }
+};
+
+//This function is invoked no matter to the cause of thread's termination
+auto on_exit_callback = [&input_file]()
+{
+    //Release resources with the help of this callback if the thread is cancelled, killed, or generally
+    if(input_file) { fclose(input_file); }
+}
+
+thread.run(thread_function, on_exit_callback);
+thread_utils::sleepFor(10000);
+quit_request.store(true);//thread.kill() or thread.cancel();
+thread.join();
+```
