@@ -27,7 +27,7 @@ Utility classes for standard threading, mutex library.
 _Starts a thread that would run forever. Waits for the thread to start with the help of a binary_semaphore_t and lets it run for 5 seconds before cancelling it._
 ```c++
 thread_utils::binary_semaphore_t thread_started_event;
-thread_utils::Thread thread("thread_0");
+thread_utils::Thread thread("thread_0"); //assigning a name to the thread 'thread_0'
 thread.run([&]()
 {
     thread_started_event.notify();//Increments the semaphore's value by one (alias for post())
