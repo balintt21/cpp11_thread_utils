@@ -4,15 +4,20 @@
 #include <stdint.h>
 #include <atomic>
 
-#include <stdio.h>
-
 namespace thread_utils
 {
     namespace tests
     {
+        /**
+         * Tests:
+         * 1. Are Thread::join(), cancel(), kill(), detach() functions working?
+         * 2. If an 'on_exit' function is passed to Thread::run then will it be invoked no matter the way of
+         * thread was terminated?
+         * 
+         */
         bool test_run()
         {
-            std::atomic_uint32_t score(6);
+            std::atomic_uint32_t score(8);
             Thread th("test_th0");
 
             std::atomic_bool quit_flag(false);
@@ -34,7 +39,6 @@ namespace thread_utils
                 quit_flag.store(false);
             };
 
-            puts("A");
             //normal termination
             if( th.run( thread_function, on_exit_callback ) )
             { 
@@ -56,10 +60,30 @@ namespace thread_utils
                         thread_start_event.wait();
                         th.kill();
                         th.join();
+
+                        th.run([&thread_start_event]()
+                        {
+                            thread_start_event.signal();
+                            uint32_t lifetime_sec = 10;
+                            while(lifetime_sec)
+                            {
+                                sleepFor(1000);
+                                --lifetime_sec;
+                            }
+                        });
+                        thread_start_event.wait();
+                        th.detach();
+
+                        if( th.run( thread_function, on_exit_callback ) )
+                        { 
+                            --score;
+                            thread_start_event.wait();
+                            quit_flag.store(true);
+                            th.join();
+                        }
                     }
                 }
             }
-            
             return (score == 0);
         }
     }
