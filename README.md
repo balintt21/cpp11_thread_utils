@@ -20,9 +20,11 @@ Utility classes for standard threading, mutex library.
 * **binary_semaphore_t** derived from class **Semaphore<2>**
 * **semaphore_t** derived from class **Semaphore<std::numeric_limits<uint32_t>::max()>**
 
-## Example
-Starts a thread that would run forever. Waits for the thread to start with the help of a binary_semaphore_t<br/>
-and lets it run for 5 seconds before cancelling it.
+## Examples
+
+### Example 1
+_Starts a thread that would run forever. Waits for the thread to start with the help of a binary_semaphore_t<br/>
+and lets it run for 5 seconds before cancelling it._
 ```c++
 thread_utils::binary_semaphore_t thread_started_event;
 thread_utils::Thread thread("thread_0");
