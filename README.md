@@ -22,7 +22,7 @@ Utility classes for standard threading, mutex library.
 
 ## Example
 Starts a thread that would run forever. Waits for the thread to start with the help of a binary_semaphore_t<br/>
-and lets it run for 5 seconds before canceling it.
+and lets it run for 5 seconds before cancelling it.
 ```c++
 thread_utils::binary_semaphore_t thread_started_event;
 thread_utils::Thread thread("thread_0");
