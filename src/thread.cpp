@@ -88,7 +88,6 @@ bool Thread::run(const std::function<void ()>& function, const std::function<voi
     std::lock_guard<std::mutex> concurent_detach_or_run_guard(mContextMutex);
 
     auto context = getContext();
-    printf("run( %d || %d && !%d)\n", !context ? 1 : 0, context ? 1 : 0,  context->state.load());
     if( !context || (context && !context->state.load()) ) //not detached and is not running
     {
         context.reset();
