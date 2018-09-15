@@ -60,6 +60,10 @@ namespace thread_utils
          */ 
         inline bool notify() { return post(); }
         /**
+         * Returns the current value of the semaphore
+         */
+        inline uint32_t value() const { return mCounter.load(); }
+        /**
          * Block the current thread until the semaphore counter rises above 0
          */
         void wait()
