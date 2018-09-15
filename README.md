@@ -65,7 +65,7 @@ printf("thread_1 counted to %u\n", counter.load());
 ```
 
 ### Example 3
-_Starts a thread that would read from a file forever. Kills|Cancels|Requests the thread after 10 seconds. In all three cases resources are released, freed._
+_Starts a thread that would read from a file forever. Kills|Cancels|Requests the thread after 10 seconds. In any case resources will be released._
 ```c++
 std::atomic_bool quit_request(false);
 thread_utils::Thread thread("thread_2");
