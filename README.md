@@ -11,9 +11,13 @@ Utility classes for standard threading, mutex library.
   * _kill_
   * _detach_
   * _set priority_
-* **Semaphore** - Header only semaphore implementation using std::condition_variable
+* **Semaphore** - Template class. Header only semaphore implementation using std::condition_variable
 * **PosixSemaphore** - Header only, uses POSIX semaphore. (lazy impl.: omitting but not hiding retvals and errors) 
 * **ConditionMutex** - A mutex and condition_variable in one piece. Implements _'Lockable'_ concept.
+
+## Types
+* **binary_semaphore_t** derived from class **Semaphore<2>**
+* **semaphore_t** derived from class **Semaphore<std::numeric_limits<uint32_t>::max()>**
 
 ## Example
 ```c++
