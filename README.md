@@ -47,7 +47,7 @@ thread.join();//Waits for the thread to finish it's execution
 _(1) See [cancellation points](http://pubs.opengroup.org/onlinepubs/000095399/functions/xsh_chap02_09.html#tag_02_09_05_02)_
 
 ### Example 2
-_Starts a thread without cancellation points that would count forever. Kills the thread after 5 seconds and prints the result.
+_Starts a thread without cancellation points that would count forever. Kills the thread after 5 seconds and prints the result._
 ```c++
 thread_utils::binary_semaphore_t thread_started_event;
 thread_utils::Thread thread("thread_1");
