@@ -138,9 +138,15 @@ void Thread::detach()
 bool Thread::cancel()
 {
     auto context = getContext();
-    if( context && context->state.load() && (context->pid > 0) )//not detached and running
+    if( context && context->state.load() )//not detached and running
     { 
-        return (pthread_cancel(static_cast<pthread_t>(context->nativeHandle)) == 0); 
+        if(context->pid > 0)
+        {
+            return (pthread_cancel(static_cast<pthread_t>(context->nativeHandle)) == 0);
+        } else {
+            context->killed = true;
+            return true;
+        }
     }
     return false;
 }
