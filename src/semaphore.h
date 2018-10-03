@@ -103,6 +103,7 @@ namespace thread_utils
     class DynamicSemaphore : public Semaphore<std::numeric_limits<uint32_t>::max()>
     {
     public:
+        DynamicSemaphore() {}
         DynamicSemaphore(uint32_t limit){ mLimit.store(limit); }
         /**
          * Set the maximum number the semaphore counter can reach
