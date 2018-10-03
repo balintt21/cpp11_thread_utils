@@ -7,7 +7,7 @@
 #include <chrono>
 #include <atomic>
 
-static bool global_term_sig_handler_registered = false;
+static std::atomic_bool global_term_sig_handler_registered(false);
 
 static void generalSignalHandler(int signum, siginfo_t * siginfo, void * arg)
 {
