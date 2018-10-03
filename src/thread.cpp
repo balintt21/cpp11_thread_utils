@@ -102,7 +102,7 @@ bool Thread::run(const std::function<void ()>& function, const std::function<voi
     return false;
 }
 
-std::string Thread::name() const noexcept
+const std::string& Thread::name() const noexcept
 {
     return mName;
 }
@@ -145,10 +145,9 @@ bool Thread::cancel()
             return (pthread_cancel(static_cast<pthread_t>(context->nativeHandle)) == 0);
         } else {
             context->killed = true;
-            return true;
         }
     }
-    return false;
+    return true;
 }
 
 bool Thread::kill()
@@ -162,10 +161,9 @@ bool Thread::kill()
             return pthread_kill(static_cast<pthread_t>(context->nativeHandle), SIGUSR2) == 0; 
         } else {
             context->killed = true;
-            return true;
         }
     }
-    return false;
+    return true;
 }
 
 bool Thread::setPriority(int32_t nice_value)
@@ -187,7 +185,7 @@ bool Thread::setPriority(int32_t nice_value)
     return false;
 }
 
-void Thread::threadFunction(std::shared_ptr<Thread::Context> context)
+void Thread::threadFunction(const std::shared_ptr<Thread::Context>& context)
 {
     if( context )
     {

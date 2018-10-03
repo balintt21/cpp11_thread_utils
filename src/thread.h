@@ -48,7 +48,7 @@ namespace thread_utils
         /**
          * Returns the name of the thread
          */
-        std::string name() const noexcept;
+        const std::string& name() const noexcept;
         /**
          * Checks whether the thread is joinable, i.e. potentially running in parallel context
          * @return True on success, otherwise false is returned.
@@ -106,8 +106,8 @@ namespace thread_utils
         std::shared_ptr<Context> mContext;
         const std::string        mName;//redundant information on purpose
 
-        static void threadFunction(std::shared_ptr<Context> context);
-        inline void resetContext(std::shared_ptr<Context> ctx)
+        static void threadFunction(const std::shared_ptr<Context>& context);
+        inline void resetContext(const std::shared_ptr<Context>& ctx)
         { std::atomic_store<Context>(&mContext, ctx); }
         inline std::shared_ptr<Thread::Context> getContext() const
         { return std::atomic_load<Context>(&mContext); }
