@@ -6,6 +6,7 @@
 #include <mutex>
 #include <atomic>
 #include <memory>
+#include <vector>
 
 namespace thread_utils
 {
@@ -79,6 +80,12 @@ namespace thread_utils
          * @return True is returned if priority setting can be applied, otherwise false.
          */
         bool setPriority(int32_t nice_value);
+        /**
+         * Sets the list of cpus on which the thread is eligible to run
+         * @param cpu_number - list of cpu numbers(ids)
+         * @return True is returned if affinity setting can be applied, otherwise false.
+         */
+        bool setAffinity(const std::vector<int32_t>& cpu_numbers);
     private:
         struct Context
         {
@@ -92,6 +99,7 @@ namespace thread_utils
             std::function<void ()>                          onCancelled;
             int32_t                                         niceValue;
             std::string                                     name;
+            std::vector<int32_t>                            cpu_set;
             Context(const std::string& _name);
         };
 
