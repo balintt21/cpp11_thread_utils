@@ -15,6 +15,7 @@ Utility classes for standard threading, mutex library.
   * _kill_
   * _detach_
   * _set priority_ (nice value)
+  * _set_affinity_ ({cpu0, cpu1, cpu2,...})
   * _reuse object (restart)_
 
 ## Types
