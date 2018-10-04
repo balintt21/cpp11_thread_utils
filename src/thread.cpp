@@ -271,6 +271,7 @@ Thread::Context::Context(const std::string& _name)
     , onCancelled()
     , niceValue(0)
     , name(_name)
+    , cpu_set()
 {}
 
 }//thread_utils end
