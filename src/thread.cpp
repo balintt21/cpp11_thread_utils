@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <syscall.h>
+#include <sched.h>
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <chrono>
@@ -165,6 +166,42 @@ bool Thread::kill()
     }
     return true;
 }
+    
+static inline bool setaffinity(pid_t pid, const std::vector<int32_t>& cpu_numbers)
+{
+    auto max_it = std::max_element(cpu_numbers.begin(), cpu_numbers.end());
+    uint32_t cpu_num_max = *max_it;
+    cpu_set_t *cpusetp = CPU_ALLOC(cpu_num_max);
+    size_t cpusetsize = CPU_ALLOC_SIZE(cpu_num_max);
+    CPU_ZERO_S(cpusetsize, cpusetp);
+    for(const auto& cpu_number : cpu_numbers)
+    {
+        CPU_SET_S(cpu_number, cpusetsize, cpusetp);
+    }
+
+    bool res = (sched_setaffinity(pid, sizeof(uint32_t), cpusetp) == 0);
+    CPU_FREE(cpusetp);
+    return res;
+}
+
+bool Thread::setAffinity(const std::vector<int32_t>& cpu_numbers)
+{
+    if( cpu_numbers.empty() ) return false;
+
+    auto context = getContext();
+    if( context && context->state.load() )
+    {
+        std::lock_guard<std::mutex> guard(context->mutex);
+        if( context->pid > 0 )
+        {
+            return setaffinity(context->pid.load(), cpu_numbers);
+        } else {
+            context->cpu_set = cpu_numbers;
+            return true;
+        }
+    }
+    return false;
+}
 
 bool Thread::setPriority(int32_t nice_value)
 {
@@ -199,6 +236,10 @@ void Thread::threadFunction(const std::shared_ptr<Thread::Context>& context)
             }
             context->nativeHandle = context->thread->native_handle();
             context->pid = static_cast<pid_t>(syscall(SYS_gettid));
+            if( !context->cpu_set.empty() )
+            {
+                setaffinity(0, context->cpu_set);
+            }
             setpriority(PRIO_PROCESS, 0, context->niceValue);
         }
 
