@@ -1,3 +1,2 @@
-DETACH test
-KILL test
-RESTARTABLE test
+implement blocking queue
+implement blocking slot
