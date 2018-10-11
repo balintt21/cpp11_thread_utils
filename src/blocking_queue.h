@@ -60,7 +60,7 @@ namespace thread_utils
         /**
          * Pops and returns the last element. Blocks if there is no element in the queue
          */
-        std::optional<T> get(int64_t timeout_ms = 1000)
+        std::optional<T> take(int64_t timeout_ms = 1000)
         {
             if( mQueueSemaphore.wait_for(timeout_ms) )
             {
@@ -76,7 +76,7 @@ namespace thread_utils
         /**
          * Pops and returns the last element. Blocks if there is no element in the queue
          */
-        T get(int64_t timeout_ms = 1000)
+        T take(int64_t timeout_ms = 1000)
         {
             if( mQueueSemaphore.wait_for(timeout_ms) )
             {
