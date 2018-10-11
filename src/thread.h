@@ -1,4 +1,5 @@
 #ifndef _THREAD_UTILS_THREAD_H_
+#define _THREAD_UTILS_THREAD_H_
 
 #include <string>
 #include <functional>
