@@ -15,14 +15,14 @@ namespace thread_utils
     public:
         WorkerThread(const std::string& name) : mIsRunning(false), mThread(name) {}
 
-        inline bool start(const std::function<bool ()>& loop_function)
+        inline bool start(const std::function<bool (std::atomic_bool& is_running)>& loop_function)
         {
             mIsRunning.store(true);
             return mThread.run([loop_function, this]()
             {
                 while(mIsRunning.load())
                 {
-                    if( !loop_function() ) 
+                    if( !loop_function(mIsRunning) ) 
                     {
                         mIsRunning.store(false); 
                         break; 
