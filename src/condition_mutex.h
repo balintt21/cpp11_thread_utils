@@ -45,19 +45,11 @@ namespace thread_utils
          * Wake all blocking threads
          */
         void notify_all();
-
-        #if defined(DEBUG)
-        /**
-         * Tells if the mutex is in locked or unlocked state.
-         */
-        bool state() const;
-        #endif
     private:
         mutable std::mutex      mMutex;
         std::condition_variable mConditionVariable;
         bool                    mSignal;
         uint32_t                mWaitingThreadCount;
-        std::atomic<bool>       mState;
     };
 }
 
