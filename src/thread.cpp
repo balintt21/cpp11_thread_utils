@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include "thread.h"
 #include <unistd.h>
 #include <signal.h>
@@ -91,13 +92,12 @@ bool Thread::run(const std::function<void ()>& function, const std::function<voi
     auto context = getContext();
     if( !context || (context && !context->state.load()) ) //not detached and is not running
     {
-        context.reset();
-        resetContext(std::make_shared<Context>(mName));
+        context->setup();
         //created new context
-        mContext->function = function;
-        mContext->onCancelled = on_cancel;
-        mContext->thread.reset(new std::thread(std::bind(&thread_utils::Thread::threadFunction, mContext)));
-        mContext->state.store(true);
+        context->function = function;
+        context->onCancelled = on_cancel;
+        context->thread.reset(new std::thread(std::bind(&thread_utils::Thread::threadFunction, mContext)));
+        context->state.store(true);
         return true;
     }
     return false;
@@ -189,14 +189,14 @@ bool Thread::setAffinity(const std::vector<int32_t>& cpu_numbers)
     if( cpu_numbers.empty() ) return false;
 
     auto context = getContext();
-    if( context && context->state.load() )
+    if( context )
     {
         std::lock_guard<std::mutex> guard(context->mutex);
-        if( context->pid > 0 )
+        context->cpu_set = cpu_numbers;
+        if( context->state.load() && context->pid > 0 )
         {
             return setaffinity(context->pid.load(), cpu_numbers);
         } else {
-            context->cpu_set = cpu_numbers;
             return true;
         }
     }
@@ -206,11 +206,11 @@ bool Thread::setAffinity(const std::vector<int32_t>& cpu_numbers)
 bool Thread::setPriority(int32_t nice_value)
 {
     auto context = getContext();
-    if( context && context->state.load() )
+    if( context )
     {
         std::lock_guard<std::mutex> guard(context->mutex);
         context->niceValue = nice_value;
-        if( context->pid > 0 )
+        if( context->state.load() && (context->pid > 0) )
         {
             //set priority if thread already started
             return (setpriority(PRIO_PROCESS, context->pid, nice_value) == 0);
@@ -236,6 +236,7 @@ void Thread::threadFunction(const std::shared_ptr<Thread::Context>& context)
             }
             context->nativeHandle = context->thread->native_handle();
             context->pid = static_cast<pid_t>(syscall(SYS_gettid));
+            printf("threadFunction::setaffinity cpu_set.empty? %d\n", context->cpu_set.empty());
             if( !context->cpu_set.empty() )
             {
                 setaffinity(0, context->cpu_set);
@@ -273,5 +274,13 @@ Thread::Context::Context(const std::string& _name)
     , name(_name)
     , cpu_set()
 {}
+
+void Thread::Context::setup()
+{
+    pid = 0;
+    nativeHandle = 0;
+    killed = false;
+    state = false;
+}
 
 }//thread_utils end
