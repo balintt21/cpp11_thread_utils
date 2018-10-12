@@ -102,6 +102,7 @@ namespace thread_utils
             std::string                                     name;
             std::vector<int32_t>                            cpu_set;
             Context(const std::string& _name);
+            void setup();
         };
 
         struct CleanupContext
