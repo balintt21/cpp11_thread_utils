@@ -143,11 +143,11 @@ bool Thread::cancel()
     auto context = getContext();
     if( context && context->state.load() )//not detached and running
     { 
+        std::lock_guard<std::mutex> guard(context->mutex);
+        context->killed = true;
         if(context->pid > 0)
         {
             return (pthread_cancel(static_cast<pthread_t>(context->nativeHandle)) == 0);
-        } else {
-            context->killed = true;
         }
     }
     return true;
@@ -159,11 +159,10 @@ bool Thread::kill()
     if( context && context->state.load() )//not detached and running
     { 
         std::lock_guard<std::mutex> guard(context->mutex);
+        context->killed = true;
         if( context->pid > 0 )
         {
             return pthread_kill(static_cast<pthread_t>(context->nativeHandle), SIGUSR2) == 0; 
-        } else {
-            context->killed = true;
         }
     }
     return true;
