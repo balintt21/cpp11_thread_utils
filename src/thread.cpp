@@ -92,12 +92,14 @@ bool Thread::run(const std::function<void ()>& function, const std::function<voi
     auto context = getContext();
     if( !context || (context && !context->state.load()) ) //not detached and is not running
     {
-        context->setup();
+        if( !context )
+        { resetContext(std::make_shared<Context>(mName)); }
+        mContext->setup();
         //created new context
-        context->function = function;
-        context->onCancelled = on_cancel;
-        context->thread.reset(new std::thread(std::bind(&thread_utils::Thread::threadFunction, mContext)));
-        context->state.store(true);
+        mContext->function = function;
+        mContext->onCancelled = on_cancel;
+        mContext->thread.reset(new std::thread(std::bind(&thread_utils::Thread::threadFunction, mContext)));
+        mContext->state.store(true);
         return true;
     }
     return false;
@@ -236,7 +238,6 @@ void Thread::threadFunction(const std::shared_ptr<Thread::Context>& context)
             }
             context->nativeHandle = context->thread->native_handle();
             context->pid = static_cast<pid_t>(syscall(SYS_gettid));
-            printf("threadFunction::setaffinity cpu_set.empty? %d\n", context->cpu_set.empty());
             if( !context->cpu_set.empty() )
             {
                 setaffinity(0, context->cpu_set);
