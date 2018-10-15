@@ -1,4 +1,3 @@
-#define _GNU_SOURCE
 #include "thread.h"
 #include <unistd.h>
 #include <signal.h>
@@ -92,14 +91,18 @@ bool Thread::run(const std::function<void ()>& function, const std::function<voi
     auto context = getContext();
     if( !context || (context && !context->state.load()) ) //not detached and is not running
     {
-        if( !context )
-        { resetContext(std::make_shared<Context>(mName)); }
-        mContext->setup();
-        //created new context
-        mContext->function = function;
-        mContext->onCancelled = on_cancel;
-        mContext->thread.reset(new std::thread(std::bind(&thread_utils::Thread::threadFunction, mContext)));
-        mContext->state.store(true);
+        auto new_context = std::make_shared<Context>(mName);
+        if( context )
+        {
+            std::lock_guard<std::mutex> guard(context->mutex);
+            new_context->cpu_set = context->cpu_set;
+            new_context->niceValue = context->niceValue;
+        }
+        new_context->function = function;
+        new_context->onCancelled = on_cancel;
+        new_context->thread.reset(new std::thread(std::bind(&thread_utils::Thread::threadFunction, new_context)));
+        new_context->state.store(true);
+        resetContext(new_context);
         return true;
     }
     return false;
@@ -274,13 +277,5 @@ Thread::Context::Context(const std::string& _name)
     , name(_name)
     , cpu_set()
 {}
-
-void Thread::Context::setup()
-{
-    pid = 0;
-    nativeHandle = 0;
-    killed = false;
-    state = false;
-}
 
 }//thread_utils end
