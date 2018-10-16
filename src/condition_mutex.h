@@ -49,7 +49,8 @@ namespace thread_utils
         mutable std::mutex      mMutex;
         std::condition_variable mConditionVariable;
         bool                    mSignal;
-        uint32_t                mWaitingThreadCount;
+        std::atomic_bool        mState;
+        std::atomic<uint32_t>   mWaitingThreadCount;
     };
 }
 
