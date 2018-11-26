@@ -1,4 +1,4 @@
-# cpp11_thread_utils
+# cpp_thread_utils
 Utility classes for standard threading, mutex library.
 
 ## Requirements
