@@ -1,5 +1,5 @@
-#ifndef _WORKER_THREAD_H_
-#define _WORKER_THREAD_H_
+#ifndef _LOOP_THREAD_H_
+#define _LOOP_THREAD_H_
 
 #include <atomic>
 
@@ -7,13 +7,13 @@
 
 namespace thread_utils
 {
-    class WorkerThread
+    class LoopThread
     {
     private:
         std::atomic_bool    mIsRunning;
         Thread              mThread;
     public:
-        WorkerThread(const std::string& name) : mIsRunning(false), mThread(name) {}
+        LoopThread(const std::string& name) : mIsRunning(false), mThread(name) {}
 
         inline bool start(const std::function<bool (std::atomic_bool& is_running)>& loop_function)
         {
