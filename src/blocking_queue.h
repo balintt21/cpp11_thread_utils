@@ -11,7 +11,7 @@
  * 
  *      thread_utils::BlockingQueue<uint64_t> data_queue;
  * 
- *      std::atomic_bool is_running;
+ *      std::atomic_bool is_running(true);
  *      std::thread th([&is_running, &data_queue]()
  *      {
  *          while(is_running.load())
@@ -31,6 +31,9 @@
  *          //add random data to queue
  *          data_queue.push(random_data);//or data_queue.emplace(random_data);
  *      }
+ *      is_running.store(false);
+ *      if(th.joinable())
+ *      { th.join(); }
  * 
  * Example 1:
  * 
