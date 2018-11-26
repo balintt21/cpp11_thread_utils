@@ -9,6 +9,8 @@
 #include <memory>
 #include <vector>
 
+#include "semaphore.h"
+
 namespace thread_utils
 {
     /*
@@ -101,6 +103,7 @@ namespace thread_utils
             int32_t                                         niceValue;
             std::string                                     name;
             std::vector<int32_t>                            cpu_set;
+            binary_semaphore_t                              launchGate;
             Context(const std::string& _name);
         };
 

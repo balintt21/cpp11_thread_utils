@@ -102,6 +102,7 @@ bool Thread::run(const std::function<void ()>& function, const std::function<voi
         new_context->onCancelled = on_cancel;
         new_context->thread.reset(new std::thread(std::bind(&thread_utils::Thread::threadFunction, new_context)));
         new_context->state.store(true);
+        new_context->launchGate.post();
         resetContext(new_context);
         return true;
     }
@@ -230,6 +231,7 @@ void Thread::threadFunction(const std::shared_ptr<Thread::Context>& context)
 {
     if( context )
     {
+        context->launchGate.wait();
         {
             std::lock_guard<std::mutex> guard(context->mutex);
             if( context->killed ) //killed
