@@ -59,7 +59,7 @@ namespace thread_utils
     {
     private:
         std::mutex      mMutex;
-        std::queue<T>   mQueue;
+        std::deque<T>   mQueue;
         semaphore_t     mQueueSemaphore;
     public:
         BlockingQueue() {}
@@ -67,11 +67,13 @@ namespace thread_utils
          * Push an element into the queue
          * Copies the given value!
          * @param element A const reference value of type T
+         * @param front If true is given then the element is pushed to front instead of back
          */
-        void push(const T& element)
+        void push(const T& element, bool front = false)
         {
             std::lock_guard<std::mutex> guard(mMutex);
-            mQueue.push(element);
+            if(front)   { mQueue.push_front(element); } 
+            else        { mQueue.push_back(element); }
             mQueueSemaphore.post();
         }
          /**
@@ -103,8 +105,64 @@ namespace thread_utils
             std::lock_guard<std::mutex> guard(mMutex);
             //There is no need to check if the queue is empty thankfully to the semaphore.
             auto element = std::make_optional<T>(std::move(mQueue.front()));
-            mQueue.pop();
+            mQueue.pop_front();
             return element;
+        }
+        /**
+         * Clears the queue
+         */
+        void clear()
+        {
+            std::lock_guard<std::mutex> guard(mMutex);
+            mQueue.clear();
+        }
+    };
+
+    template<typename T>
+    class BlockingSlot
+    {
+    private:
+        std::mutex          mMutex;
+        std::optional<T>    mSlot;
+        binary_semaphore_t  mSemaphore;
+    public:
+        BlockingSlot() : mMutex(), mSlot(std::nullopt), mSemaphore() {}
+        /**
+         * Sets the given value to the slot
+         * @param value
+         * @return True is returned if the slot was empty, otherwise false
+         */
+        bool set(const T& value)
+        {
+            std::lock_guard<std::mutex> guard(mMutex);
+            mSlot = value;
+            return mSemaphore.post();
+        }
+        /**
+         * Returns the value of the slot if set prevoiusly
+         * This function is blocking until the slot set or the given timeout expires
+         * @param timeout_ms Timeout in millseconds. For an unlimited timeout, use value -1
+         * @return std::nullopt is returned on failure
+         */
+        std::optional<T> get(int64_t timeout_ms = -1)
+        {
+            if(timeout_ms < 0)
+            {
+                mSemaphore.wait();
+            } else {
+                if( !mSemaphore.wait_for(timeout_ms) )
+                { return std::nullopt; }
+            }
+            std::lock_guard<std::mutex> guard(mMutex);
+            return mSlot;
+        }
+        /**
+         * Clears the slot
+         */
+        void clear()
+        {
+            std::lock_guard<std::mutex> guard(mMutex);
+            mSlot = std::nullopt;
         }
     };
 }
